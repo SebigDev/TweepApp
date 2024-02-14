@@ -1,0 +1,29 @@
+[package]
+name = "twit"
+version = "0.1.0"
+authors = ["Chukwunasa"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-rt= "2.7.0"
+actix-web = "4.2.1"
+actix-cors = "0.2.0"
+serde = { version = "1.0.147", features = ["derive"] }
+serde_json = "1.0.87"
+uuid ={ version = "1.2.1", features = ["serde", "v4"] }
+log = "0.4.0"
+env_logger = "0.9.0"
+chrono = { version = "0.4.22", features = ["serde"] }
+dotenv = "0.15.0"
+bson = { version = "2.0.0-beta.1", features = ["chrono-0_4"] }
+mongodb = { version = "2.2.0", default-features = false, features = ["async-std-runtime"] }
+derive_more = "0.99.17"
+
+actix-web-httpauth = "0.8.0"
+jwt = "0.16.0"
+hmac = "0.12.1"
+sha2 = "0.10.6"
+argonautica = "0.2.0"
+futures =  "0.3"
