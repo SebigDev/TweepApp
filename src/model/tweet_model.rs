@@ -19,7 +19,7 @@ impl Tweet {
     pub fn new(message: &str, user_id: &str) -> Tweet {
         Tweet {
             id: None,
-            user_id: Some(ObjectId::parse_str(&user_id).unwrap()),
+            user_id: Some(ObjectId::parse_str(user_id).unwrap()),
             created_at: Utc::now(),
             message: message.to_string(),
             likes: vec![],
@@ -74,9 +74,8 @@ pub struct TweetRequest {
 
 impl TweetActions for TweetRequest {
     fn tweet(&self, user_id: String) -> Option<Tweet> {
-        match &self.message {
-            Some(message) => Some(Tweet::new(message, &user_id)),
-            None => None,
-        }
+        self.message
+            .as_ref()
+            .map(|message| Tweet::new(message, &user_id))
     }
 }

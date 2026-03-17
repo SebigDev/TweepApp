@@ -36,14 +36,14 @@ pub struct UserDto {
 
 impl TweetDto {
     /// Transforms <b>TweetDto</b> to <b>Tweet</b> using mapping.
-    pub fn to_tweet(self) -> Tweet {
+    pub fn to_tweet(&self) -> Tweet {
         Tweet {
             id: Some(ObjectId::parse_str(&self.id).unwrap()),
             user_id: Some(ObjectId::parse_str(&self.id).unwrap()),
             message: self.message.to_owned(),
             created_at: self.created_at,
-            likes: self.likes.into_iter().map(|l| l.to_like()).collect(),
-            comments: self.comments.into_iter().map(|c| c.to_comment()).collect(),
+            likes: self.likes.iter().map(|l| l.to_like()).collect(),
+            comments: self.comments.iter().map(|c| c.to_comment()).collect(),
         }
     }
 }
@@ -60,7 +60,7 @@ impl LikeDto {
 }
 
 impl CommentDto {
-     /// Transforms <b>CommentDto</b> to <b>Comment</b> using mapping.
+    /// Transforms <b>CommentDto</b> to <b>Comment</b> using mapping.
     pub fn to_comment(&self) -> Comment {
         Comment {
             id: Some(ObjectId::parse_str(&self.id).unwrap()),

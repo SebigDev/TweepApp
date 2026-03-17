@@ -18,7 +18,7 @@ impl Comment {
             id: Some(ObjectId::new()),
             message: message.to_string(),
             created_at: Utc::now(),
-            tweet_id: Some(ObjectId::parse_str(&tweet_id).unwrap()),
+            tweet_id: Some(ObjectId::parse_str(tweet_id).unwrap()),
         }
     }
     /// Transforms <b>Comment</b> to <b>CommentDo</b> using mapping.
@@ -43,9 +43,8 @@ pub struct CommentRequest {
 
 impl CommentAction for CommentRequest {
     fn comment(&self, tweet_id: &str) -> Option<Comment> {
-        match &self.message {
-            Some(message) => Some(Comment::new(tweet_id, message.as_str())),
-            None => None,
-        }
+        self.message
+            .as_ref()
+            .map(|message| Comment::new(tweet_id, message.as_str()))
     }
 }

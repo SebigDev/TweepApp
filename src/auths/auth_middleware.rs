@@ -50,5 +50,5 @@ pub async fn validator(
 }
 
 fn is_token_expired(ex: u64) -> bool {
-    Some(ex).unwrap_or(0) < Utc::now().timestamp() as u64
+    ex < Utc::now().timestamp() as u64
 }

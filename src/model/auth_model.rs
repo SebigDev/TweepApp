@@ -39,7 +39,6 @@ impl User {
             .with_secret_key(secret)
             .hash()
             .unwrap()
-      
     }
 
     /// Verifies the password using the verifier algorithm

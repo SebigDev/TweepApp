@@ -54,7 +54,7 @@ pub async fn list_tweets(
 pub async fn get_tweet(db: Data<TweetRepo<Tweet>>, path: Path<(String,)>) -> impl Responder {
     let id = path.0.as_str();
     if id.is_empty() {
-        return HttpResponse::BadRequest().body(format!("Id not provided"));
+        return HttpResponse::BadRequest().body("Id not provided".to_string());
     }
     let result = db.get_tweet(id).await;
 
@@ -68,7 +68,7 @@ pub async fn get_tweet(db: Data<TweetRepo<Tweet>>, path: Path<(String,)>) -> imp
 pub async fn delete_tweet(db: Data<TweetRepo<Tweet>>, path: Path<(String,)>) -> impl Responder {
     let id = path.0.as_str();
     if id.is_empty() {
-        return HttpResponse::BadRequest().body(format!("Id not provided").to_string());
+        return HttpResponse::BadRequest().body("Id not provided".to_string());
     }
     let result = db.delete_tweet(id).await;
 
@@ -102,7 +102,7 @@ pub async fn delete_comment(
     let tweet_id = path.0.as_str();
     let comment_id = path.1.as_str();
     if tweet_id.is_empty() || comment_id.is_empty() {
-        return HttpResponse::BadRequest().body(format!("Id not provided").to_string());
+        return HttpResponse::BadRequest().body("Id not provided".to_string());
     }
     let result = db.remove_comment(tweet_id, comment_id).await;
 

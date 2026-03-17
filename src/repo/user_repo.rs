@@ -16,7 +16,7 @@ impl UserRepo<User> {
         let user_result = self.get_user_by_email(&user.email).await;
         match user_result {
             Ok(mut resp) => {
-                while resp.advance().await.unwrap() {
+                if resp.advance().await.unwrap() {
                     return Err(TweetError::BadRequest(format!(
                         "User with {} already exists",
                         user.email
@@ -25,6 +25,7 @@ impl UserRepo<User> {
             }
             Err(_) => return Err(TweetError::InternalServerError),
         };
+
         let _user = self
             .collection
             .insert_one(user, None)
@@ -37,17 +38,18 @@ impl UserRepo<User> {
             Some(id) => id.to_hex(),
             None => return Err(TweetError::BadRequest("Error registering user".into())),
         };
-        return Ok(UserDto {
+
+        Ok(UserDto {
             id,
             message: "Your registration was successful".into(),
-        });
+        })
     }
 
     pub async fn valid_user(&self, auth: &AuthData) -> Result<String, TweetError> {
         let user_result = self.get_user_by_email(&auth.email).await;
         match user_result {
             Ok(mut user) => {
-                while user.advance().await.unwrap() {
+                if user.advance().await.unwrap() {
                     let _user = match user.deserialize_current() {
                         Ok(user) => user,
                         Err(_) => {
@@ -58,16 +60,16 @@ impl UserRepo<User> {
                     let token = match token_option {
                         Some(_token) => _token,
                         None => return Err(TweetError::Unauthorized("authentication failed, please check that email and/or password are correct".into()))
-                        
                     };
                     return Ok(token);
                 }
-                return Err(TweetError::Unauthorized(
-                    format!("No user with {} found.", &auth.email).into(),
-                ));
+                Err(TweetError::Unauthorized(format!(
+                    "No user with {} found.",
+                    &auth.email
+                )))
             }
-            Err(_) => return Err(TweetError::InternalServerError),
-        };
+            Err(_) => Err(TweetError::InternalServerError),
+        }
     }
 
     pub async fn change_password(
@@ -77,12 +79,12 @@ impl UserRepo<User> {
         let verify = self.get_user_by_email(&request.email).await;
 
         match verify {
-            Err(_) => return Err(TweetError::BadRequest("User verification failed".into())),
+            Err(_) => Err(TweetError::BadRequest("User verification failed".into())),
             Ok(mut v_result) => {
-                while v_result.advance().await.unwrap() {
+                if v_result.advance().await.unwrap() {
                     let user_result = v_result.deserialize_current();
                     let mut user = match user_result {
-                        Err(_) => return Err(TweetError::BadRequest("No user found".into())),
+                        Err(_) => return Err(TweetError::NotFound("No user found".into())),
                         Ok(new_user) => new_user,
                     };
 
@@ -106,16 +108,16 @@ impl UserRepo<User> {
 
                         let response = match _update_password {
                             Ok(_) => String::from("Password updated successfully."),
-                            Err(err) => return Err(err),
+                            Err(err) => err.to_string(),
                         };
                         return Ok(response);
                     }
                     return Err(TweetError::BadRequest("Invalid password provided.".into()));
                 }
-                return Err(TweetError::BadRequest("Error changing password.".into()));
+                Err(TweetError::BadRequest("Error changing password.".into()))
             }
-        };
-    } 
+        }
+    }
 
     /// Get user by email address
     async fn get_user_by_email(&self, email: &str) -> Result<Cursor<User>, TweetError> {

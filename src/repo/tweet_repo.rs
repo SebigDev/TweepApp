@@ -29,7 +29,7 @@ impl TweetRepo<Tweet> {
         };
 
         let dto = self.get_tweet(&id).await.unwrap();
-        return Ok(dto);
+        Ok(dto)
     }
 
     pub async fn all_tweets(&self, _user_id: &str) -> Result<Vec<TweetDto>, Error> {
@@ -39,7 +39,6 @@ impl TweetRepo<Tweet> {
             .collection
             .find(filter, None)
             .await
-            .ok()
             .expect("Failed to retrieve all likes");
         let mut tweets = Vec::<Tweet>::new();
         while _tweets.advance().await.unwrap() {
@@ -59,7 +58,6 @@ impl TweetRepo<Tweet> {
             .collection
             .find(filter, None)
             .await
-            .ok()
             .expect("Failed to retrieve like");
         let tweet_dto: TweetDto = _tweet.deserialize_current().unwrap().map();
         Ok(tweet_dto)
@@ -72,7 +70,6 @@ impl TweetRepo<Tweet> {
             .collection
             .delete_one(filter, None)
             .await
-            .ok()
             .expect("Failed to retrieve tweet");
         Ok(_tweet)
     }
@@ -87,7 +84,6 @@ impl TweetRepo<Tweet> {
             .collection
             .update_one(query, update_tweet_document(&tweet), None)
             .await
-            .ok()
             .expect("Error creating like");
         Ok(tweet.map())
     }
@@ -103,7 +99,6 @@ impl TweetRepo<Tweet> {
             .collection
             .update_one(query, update_tweet_document(&tweet), None)
             .await
-            .ok()
             .expect("Error removing like");
         Ok(tweet.map())
     }
@@ -119,7 +114,6 @@ impl TweetRepo<Tweet> {
             .collection
             .update_one(query, update_tweet_document(&tweet), None)
             .await
-            .ok()
             .expect("Error adding comment");
         Ok(tweet.map())
     }
@@ -139,7 +133,6 @@ impl TweetRepo<Tweet> {
             .collection
             .update_one(query, update_tweet_document(&tweet), None)
             .await
-            .ok()
             .expect("Error removing comment");
         Ok(tweet.map())
     }
